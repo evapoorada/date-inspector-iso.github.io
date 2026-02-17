@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Date Inspector</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=Barlow+Condensed:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0e0f11;
+      --surface:  #16181d;
+      --border:   #2a2d35;
+      --accent:   #e8ff47;
+      --accent2:  #47c8ff;
+      --muted:    #555a68;
+      --text:     #d4d8e2;
+      --label:    #888da0;
+      --mono:     'IBM Plex Mono', monospace;
+      --cond:     'Barlow Condensed', sans-serif;
+      --q1:       #e8ff47;
+      --q2:       #47c8ff;
+      --q3:       #ff9f47;
+      --q1-dim:   rgba(232,255,71,.07);
+      --q2-dim:   rgba(71,200,255,.07);
+      --q3-dim:   rgba(255,159,71,.07);
+      --q1-mid:   rgba(232,255,71,.15);
+      --q2-mid:   rgba(71,200,255,.15);
+      --q3-mid:   rgba(255,159,71,.15);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+      background-image:
+        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* ── Header ── */
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner { border-left: 3px solid var(--accent); padding-left: 1rem; }
+    .header-inner .eyebrow {
+      font-size: .6rem; letter-spacing: .25em; color: var(--accent);
+      text-transform: uppercase; margin-bottom: .3rem;
+    }
+    .header-inner h1 {
+      font-family: var(--cond); font-size: 2.2rem; font-weight: 700;
+      letter-spacing: .04em; line-height: 1; color: #fff;
+    }
+    .header-inner p { margin-top: .4rem; font-size: .68rem; color: var(--label); line-height: 1.6; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    .tab-btn {
+      background: none; border: none;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      font-family: var(--cond); font-size: .95rem; font-weight: 500;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--muted); padding: .6rem 1.4rem;
+      cursor: pointer; transition: color .15s, border-color .15s;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ══════════════════════════════
+       TAB 1 — INSPECTOR
+    ══════════════════════════════ */
+    .inspector-wrap { max-width: 620px; }
+
+    .input-wrap { display: flex; gap: .75rem; margin-bottom: 1.5rem; }
+
+    input[type="date"] {
+      flex: 1; background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); font-family: var(--mono); font-size: .9rem;
+      padding: .85rem 1rem; outline: none; transition: border-color .2s;
+      appearance: none; -webkit-appearance: none; color-scheme: dark;
+    }
+    input[type="date"]:focus { border-color: var(--accent); }
+
+    .btn-analyze {
+      background: var(--accent); color: #0e0f11; border: none;
+      font-family: var(--cond); font-size: 1rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: .85rem 1.5rem; cursor: pointer;
+      transition: background .15s, transform .1s;
+      white-space: nowrap;
+    }
+    .btn-analyze:hover  { background: #f5ff7a; }
+    .btn-analyze:active { transform: scale(.97); }
+
+    .error-msg {
+      width: 100%; background: #2a1010; border: 1px solid #5a1a1a;
+      color: #ff7b7b; font-size: .75rem; padding: .75rem 1rem;
+      margin-bottom: 1rem; display: none;
+    }
+    .error-msg.show { display: block; }
+
+    .echo {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1.2rem; opacity: 0; transition: opacity .3s;
+    }
+    .echo.visible { opacity: 1; }
+    .echo .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+    .echo span { font-size: .72rem; color: var(--label); }
+    .echo strong { color: var(--text); font-weight: 600; }
+
+    .results {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border); border: 1px solid var(--border);
+      opacity: 0; transform: translateY(12px);
+      transition: opacity .35s ease, transform .35s ease; pointer-events: none;
+    }
+    .results.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+    .card { background: var(--surface); padding: 1.25rem 1.4rem; position: relative; overflow: hidden; }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: var(--border);
+    }
+    .card.accent-week::before    { background: var(--accent); }
+    .card.accent-month::before   { background: var(--accent2); }
+    .card.accent-year::before    { background: #ff7eb3; }
+    .card.accent-quarter::before { background: var(--q3); }
+    .card.full { grid-column: span 2; }
+
+    .card .tag   { font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--label); margin-bottom: .5rem; }
+    .card .value { font-family: var(--mono); font-size: 1.7rem; font-weight: 600; line-height: 1; margin-bottom: .3rem; word-break: break-all; color: #fff; }
+    .card.accent-week    .value { color: var(--accent); }
+    .card.accent-month   .value { color: var(--accent2); }
+    .card.accent-year    .value { color: #ff7eb3; }
+    .card.accent-quarter .value { color: var(--q3); }
+    .card .sub { font-size: .7rem; color: var(--muted); margin-top: .15rem; }
+
+    .q-badge {
+      display: inline-block; font-family: var(--cond); font-size: 4rem; font-weight: 700;
+      color: rgba(255,159,71,.12); position: absolute; right: 1rem; top: 50%;
+      transform: translateY(-50%); pointer-events: none;
+    }
+
+    @keyframes pop {
+      0%   { transform: scale(.9); opacity: 0; }
+      60%  { transform: scale(1.04); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .card { animation: none; }
+    .results.visible .card                  { animation: pop .3s ease forwards; }
+    .results.visible .card:nth-child(2)     { animation-delay: .05s; }
+    .results.visible .card:nth-child(3)     { animation-delay: .10s; }
+    .results.visible .card:nth-child(4)     { animation-delay: .15s; }
+
+    /* ══════════════════════════════
+       TAB 2 — CALENDAR
+    ══════════════════════════════ */
+    .cal-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+    }
+    .cal-year-tabs { display: flex; }
+    .cal-year-btn {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--muted); font-family: var(--cond); font-size: 1.1rem;
+      font-weight: 700; letter-spacing: .06em; padding: .5rem 1.3rem;
+      cursor: pointer; transition: all .15s;
+    }
+    .cal-year-btn:first-child { border-right: none; }
+    .cal-year-btn.active { background: var(--accent); color: #0e0f11; border-color: var(--accent); }
+    .cal-year-btn:not(.active):hover { color: var(--text); }
+
+    .legend { display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; }
+    .legend-item { display: flex; align-items: center; gap: .4rem; font-size: .65rem; letter-spacing: .1em; text-transform: uppercase; color: var(--label); }
+    .legend-dot  { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .legend-dot.q1 { background: var(--q1); }
+    .legend-dot.q2 { background: var(--q2); }
+    .legend-dot.q3 { background: var(--q3); }
+
+    .cal-table-wrap { overflow-x: auto; border: 1px solid var(--border); }
+
+    .cal-table {
+      width: 100%; border-collapse: collapse;
+      font-size: .72rem; min-width: 680px;
+    }
+    .cal-table thead th {
+      background: #0c0d0f; color: var(--label);
+      font-family: var(--cond); font-size: .68rem; font-weight: 500;
+      letter-spacing: .18em; text-transform: uppercase;
+      padding: .65rem 1rem; text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .cal-table tbody tr { border-bottom: 1px solid rgba(255,255,255,.04); transition: background .1s; }
+    .cal-table tbody tr:last-child { border-bottom: none; }
+
+    /* Quarter row backgrounds */
+    .cal-table tbody tr.q1-row { background: var(--q1-dim); }
+    .cal-table tbody tr.q2-row { background: var(--q2-dim); }
+    .cal-table tbody tr.q3-row { background: var(--q3-dim); }
+    .cal-table tbody tr.q1-row:hover { background: var(--q1-mid); }
+    .cal-table tbody tr.q2-row:hover { background: var(--q2-mid); }
+    .cal-table tbody tr.q3-row:hover { background: var(--q3-mid); }
+
+    /* Quarter start separator */
+    .cal-table tbody tr.q1-start td { border-top: 2px solid var(--q1) !important; }
+    .cal-table tbody tr.q2-start td { border-top: 2px solid var(--q2) !important; }
+    .cal-table tbody tr.q3-start td { border-top: 2px solid var(--q3) !important; }
+
+    /* Today */
+    .cal-table tbody tr.today-row { outline: 1px solid rgba(232,255,71,.3); outline-offset: -1px; }
+    .cal-table tbody tr.today-row td { background: rgba(232,255,71,.05) !important; }
+
+    .cal-table td { padding: .55rem 1rem; vertical-align: middle; white-space: nowrap; }
+
+    .td-week-num {
+      font-family: var(--cond); font-size: 1rem; font-weight: 700;
+      letter-spacing: .04em; color: #fff;
+    }
+    .td-week-iso { font-size: .58rem; color: var(--muted); display: block; margin-bottom: 1px; letter-spacing: .08em; }
+    .today-row .td-week-num::after { content: ' ◀'; font-size: .6rem; color: var(--accent); font-weight: 400; }
+
+    .td-range { color: var(--label); font-size: .7rem; }
+    .td-thu   { color: var(--muted); font-size: .7rem; }
+
+    .td-month { font-weight: 600; font-size: .78rem; }
+    .q1-row .td-month { color: var(--q1); }
+    .q2-row .td-month { color: var(--q2); }
+    .q3-row .td-month { color: var(--q3); }
+    .td-month-name { font-size: .62rem; color: var(--muted); font-weight: 400; margin-left: .3rem; }
+
+    .td-quarter { font-family: var(--cond); font-size: 1.05rem; font-weight: 700; letter-spacing: .05em; }
+    .q1-row .td-quarter { color: var(--q1); }
+    .q2-row .td-quarter { color: var(--q2); }
+    .q3-row .td-quarter { color: var(--q3); }
+
+    footer {
+      margin-top: 3rem; padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: .58rem; color: var(--muted); letter-spacing: .1em; text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <header>
+    <div class="header-inner">
+      <div class="eyebrow">// dayjs · ISO 8601</div>
+      <h1>Date Inspector</h1>
+      <p>Semana ISO · Mes · Año · Quarter personalizado (3Q × 4 meses, desde enero)</p>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="inspector">① Inspector</button>
+    <button class="tab-btn" data-tab="calendar">② Calendario de semanas 2026 – 2027</button>
+  </div>
+
+  <!-- ══ TAB 1 ══ -->
+  <div class="tab-panel active" id="panel-inspector">
+    <div class="inspector-wrap">
+
+      <div class="input-wrap">
+        <input type="date" id="dateInput" />
+        <button class="btn-analyze" id="btnAnalyze">Analizar →</button>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="echo" id="echo">
+        <div class="dot"></div>
+        <span>Analizando: <strong id="echoDate"></strong></span>
+      </div>
+
+      <div class="results" id="results">
+        <div class="card accent-week">
+          <div class="tag">// Semana ISO</div>
+          <div class="value" id="rWeek">—</div>
+          <div class="sub"  id="rWeekSub">—</div>
+        </div>
+        <div class="card accent-month">
+          <div class="tag">// Mes ISO</div>
+          <div class="value" id="rMonth">—</div>
+          <div class="sub"  id="rMonthSub">—</div>
+        </div>
+        <div class="card accent-year">
+          <div class="tag">// Año ISO</div>
+          <div class="value" id="rYear">—</div>
+          <div class="sub"  id="rYearSub">—</div>
+        </div>
+        <div class="card accent-quarter full">
+          <div class="tag">// Quarter custom</div>
+          <div class="value" id="rQuarter">—</div>
+          <div class="sub"  id="rQuarterSub">—</div>
+          <span class="q-badge" id="qBadge"></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ TAB 2 ══ -->
+  <div class="tab-panel" id="panel-calendar">
+
+    <div class="cal-toolbar">
+      <div class="cal-year-tabs">
+        <button class="cal-year-btn active" data-year="2026">2026</button>
+        <button class="cal-year-btn"        data-year="2027">2027</button>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot q1"></div>Q1 · Ene – Abr</div>
+        <div class="legend-item"><div class="legend-dot q2"></div>Q2 · May – Ago</div>
+        <div class="legend-item"><div class="legend-dot q3"></div>Q3 · Sep – Dic</div>
+      </div>
+    </div>
+
+    <div class="cal-table-wrap">
+      <table class="cal-table">
+        <thead>
+          <tr>
+            <th>Semana ISO</th>
+            <th>Rango (Lun – Dom)</th>
+            <th>Jueves (ref.)</th>
+            <th>Mes ISO</th>
+            <th>Quarter</th>
+          </tr>
+        </thead>
+        <tbody id="calBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <footer>DATE INSPECTOR · DAYJS · ISO 8601 · CUSTOM 3-QUARTER SYSTEM</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/isoWeek.js"></script>
+
+<script>
+  dayjs.extend(window.dayjs_plugin_isoWeek);
+
+  /* ───── Shared helpers ───── */
+  const MONTH_NAMES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                       'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const MONTH_SHORT = ['','Ene','Feb','Mar','Abr','May','Jun',
+                       'Jul','Ago','Sep','Oct','Nov','Dic'];
+  const DAY_FULL    = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+  function getQ(d) {
+    const m = d.month() + 1;
+    if (m <= 4) return { label:'Q1', range:'Enero – Abril',           cls:'q1' };
+    if (m <= 8) return { label:'Q2', range:'Mayo – Agosto',           cls:'q2' };
+    return             { label:'Q3', range:'Septiembre – Diciembre',   cls:'q3' };
+  }
+
+  /* ───── Tab switching ───── */
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* ───── Tab 1 — Inspector ───── */
+  function analyze() {
+    const raw       = document.getElementById('dateInput').value;
+    const errorEl   = document.getElementById('errorMsg');
+    const resultsEl = document.getElementById('results');
+    const echoEl    = document.getElementById('echo');
+
+    errorEl.classList.remove('show');
+    resultsEl.classList.remove('visible');
+    echoEl.classList.remove('visible');
+
+    if (!raw) {
+      errorEl.textContent = 'Por favor, introduce una fecha.';
+      errorEl.classList.add('show');
+      return;
+    }
+    const d = dayjs(raw);
+    if (!d.isValid()) {
+      errorEl.textContent = 'Fecha inválida.';
+      errorEl.classList.add('show');
+      return;
+    }
+
+    const isoYear    = d.isoWeekYear();
+    const isoWeekNum = d.isoWeek();
+    const weekday    = d.day();
+    const thursday   = d.isoWeekday(4);
+    const refMonth   = thursday.month() + 1;
+    const refYear    = thursday.year();
+    const qInfo      = getQ(thursday);
+    const inputMonth = d.month() + 1;
+    const cross      = inputMonth !== refMonth;
+
+    document.getElementById('echoDate').textContent =
+      `${DAY_FULL[weekday]}, ${d.date()} de ${MONTH_NAMES[inputMonth]} de ${d.year()}`;
+
+    document.getElementById('rWeek').textContent    = `${isoYear}-W${String(isoWeekNum).padStart(2,'0')}`;
+    document.getElementById('rWeekSub').textContent = `${DAY_FULL[weekday]}, semana ${isoWeekNum} de ${isoYear}`;
+
+    document.getElementById('rMonth').textContent    = `${refYear}-${String(refMonth).padStart(2,'0')}`;
+    document.getElementById('rMonthSub').textContent = cross
+      ? `${MONTH_NAMES[refMonth]} ${refYear} (por jueves ${thursday.date()}/${refMonth})`
+      : `${MONTH_NAMES[refMonth]} ${refYear}`;
+
+    document.getElementById('rYear').textContent    = String(isoYear);
+    document.getElementById('rYearSub').textContent = 'Año ISO de la semana';
+
+    document.getElementById('rQuarter').textContent    = `${isoYear}-${qInfo.label}`;
+    document.getElementById('rQuarterSub').textContent = cross
+      ? `${qInfo.range} (por jueves ${thursday.date()}/${refMonth})`
+      : qInfo.range;
+    document.getElementById('qBadge').textContent = qInfo.label;
+
+    resultsEl.classList.remove('visible');
+    void resultsEl.offsetWidth;
+    echoEl.classList.add('visible');
+    setTimeout(() => resultsEl.classList.add('visible'), 50);
+  }
+
+  document.getElementById('btnAnalyze').addEventListener('click', analyze);
+  document.getElementById('dateInput').addEventListener('keydown', e => { if (e.key === 'Enter') analyze(); });
+  document.getElementById('dateInput').value = dayjs().format('YYYY-MM-DD');
+
+  /* ───── Tab 2 — Calendar ───── */
+  function fmt(d) { return `${String(d.date()).padStart(2,'0')} ${MONTH_SHORT[d.month()+1]}`; }
+
+  function buildCalendar(year) {
+    const tbody    = document.getElementById('calBody');
+    const todayW   = dayjs().isoWeek();
+    const todayWY  = dayjs().isoWeekYear();
+
+    tbody.innerHTML = '';
+
+    // Find Monday of ISO W01 of `year`
+    let cursor  = dayjs(`${year}-01-04`).isoWeekday(1);
+    let prevQ   = null;
+
+    for (let i = 0; i < 54; i++) {
+      const thursday = cursor.isoWeekday(4);
+      const wYear    = cursor.isoWeekYear();
+      const wNum     = cursor.isoWeek();
+
+      if (wYear !== year) { cursor = cursor.add(7, 'day'); continue; }
+
+      const sunday   = cursor.add(6, 'day');
+      const refMonth = thursday.month() + 1;
+      const refYear  = thursday.year();
+      const qInfo    = getQ(thursday);
+      const isToday  = (wYear === todayWY && wNum === todayW);
+      const isQStart = qInfo.label !== prevQ;
+      prevQ = qInfo.label;
+
+      const tr = document.createElement('tr');
+      tr.className = `${qInfo.cls}-row`;
+      if (isToday)  tr.classList.add('today-row');
+      if (isQStart) tr.classList.add(`${qInfo.cls}-start`);
+
+      tr.innerHTML = `
+        <td>
+          <span class="td-week-iso">ISO</span>
+          <span class="td-week-num">${year}-W${String(wNum).padStart(2,'0')}</span>
+        </td>
+        <td class="td-range">${fmt(cursor)} – ${fmt(sunday)}</td>
+        <td class="td-thu">${fmt(thursday)}</td>
+        <td class="td-month">
+          ${refYear}-${String(refMonth).padStart(2,'0')}
+          <span class="td-month-name">${MONTH_SHORT[refMonth]}</span>
+        </td>
+        <td class="td-quarter">${year}-${qInfo.label}</td>
+      `;
+
+      tbody.appendChild(tr);
+      cursor = cursor.add(7, 'day');
+    }
+  }
+
+  document.querySelectorAll('.cal-year-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.cal-year-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      buildCalendar(parseInt(btn.dataset.year));
+    });
+  });
+
+  buildCalendar(2026);
+</script>
+</body>
+</html>
