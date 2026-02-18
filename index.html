@@ -290,6 +290,213 @@
     .copy-ok.show { opacity: 1; }
 
     /* ══════════════════════════════
+       TAB 3 — ISO TOOLS
+    ══════════════════════════════ */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1000px;
+    }
+
+    .tool-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+    }
+    .tool-card-title {
+      font-family: var(--cond);
+      font-size: .8rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      padding-bottom: .5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Week picker visual */
+    .week-picker-cal {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      font-size: .65rem;
+    }
+    .wp-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a1c22;
+      cursor: pointer;
+      transition: background .1s;
+      font-size: .7rem;
+      color: var(--label);
+    }
+    .wp-day:hover { background: #242630; }
+    .wp-day.wp-selected { background: var(--accent); color: #000; font-weight: 600; }
+    .wp-day.wp-other-month { opacity: .3; }
+    .wp-header {
+      font-size: .55rem;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: .3rem 0;
+      text-align: center;
+      letter-spacing: .08em;
+    }
+    .wp-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: .5rem;
+      align-items: center;
+    }
+    .wp-month-label {
+      font-family: var(--cond);
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .wp-nav {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--label);
+      cursor: pointer;
+      padding: .2rem .5rem;
+      font-size: .7rem;
+      transition: all .15s;
+    }
+    .wp-nav:hover { border-color: var(--accent); color: var(--accent); }
+    .wp-result {
+      font-size: .68rem;
+      color: var(--label);
+      margin-top: .5rem;
+      padding: .5rem;
+      background: #0c0d0f;
+      border-left: 2px solid var(--accent);
+      display: none;
+    }
+    .wp-result.show { display: block; }
+    .wp-result strong { color: var(--accent); }
+
+    /* Boundary weeks */
+    .boundary-list {
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: .68rem;
+    }
+    .boundary-item {
+      padding: .5rem;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      display: flex;
+      flex-direction: column;
+      gap: .2rem;
+    }
+    .boundary-item:last-child { border-bottom: none; }
+    .bi-week { font-weight: 600; color: var(--accent); }
+    .bi-detail { color: var(--muted); font-size: .62rem; }
+
+    /* Shortcuts */
+    .shortcut-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .5rem;
+    }
+    .btn-shortcut {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--label);
+      font-size: .68rem;
+      padding: .5rem .7rem;
+      cursor: pointer;
+      transition: all .15s;
+      text-align: left;
+    }
+    .btn-shortcut:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Inverse calculator */
+    .inverse-input {
+      display: flex;
+      gap: .5rem;
+    }
+    .inverse-input input {
+      flex: 1;
+      background: #1a1c22;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: .75rem;
+      padding: .5rem .7rem;
+      outline: none;
+    }
+    .inverse-input input:focus { border-color: var(--accent); }
+    .inverse-result {
+      margin-top: .6rem;
+      padding: .6rem;
+      background: #0c0d0f;
+      border-left: 2px solid var(--accent2);
+      font-size: .68rem;
+      display: none;
+    }
+    .inverse-result.show { display: block; }
+    .inverse-result .ir-label { color: var(--muted); font-size: .58rem; margin-bottom: .3rem; }
+    .inverse-result .ir-value { color: var(--text); font-weight: 600; }
+
+    /* Validator */
+    .validator-textarea {
+      width: 100%;
+      background: #1a1c22;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: .7rem;
+      padding: .6rem;
+      outline: none;
+      resize: vertical;
+      min-height: 80px;
+    }
+    .validator-textarea:focus { border-color: var(--accent); }
+    .validator-result {
+      margin-top: .6rem;
+      font-size: .68rem;
+      display: none;
+    }
+    .validator-result.show { display: block; }
+    .vr-section {
+      padding: .5rem;
+      margin-bottom: .5rem;
+      border-left: 2px solid;
+    }
+    .vr-section.vr-valid { border-color: var(--accent); background: rgba(232,255,71,.05); }
+    .vr-section.vr-invalid { border-color: #ff7b7b; background: rgba(255,123,123,.05); }
+    .vr-section.vr-info { border-color: var(--accent2); background: rgba(71,200,255,.05); }
+    .vr-title { font-weight: 600; margin-bottom: .3rem; }
+    .vr-list { color: var(--muted); font-size: .62rem; list-style: none; }
+    .vr-list li { padding: .15rem 0; }
+
+    /* Year week count */
+    .ywc-table {
+      width: 100%;
+      font-size: .7rem;
+      border-collapse: collapse;
+    }
+    .ywc-table td, .ywc-table th {
+      padding: .4rem .6rem;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      text-align: left;
+    }
+    .ywc-table th {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: .6rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .ywc-53 { color: var(--accent); font-weight: 600; }
+
+    /* ══════════════════════════════
        TAB 2 — CALENDAR
     ══════════════════════════════ */
     .cal-toolbar {
@@ -392,7 +599,8 @@
 
   <div class="tabs">
     <button class="tab-btn active" data-tab="inspector">① Inspector</button>
-    <button class="tab-btn" data-tab="calendar">② Calendario de semanas 2026 – 2027</button>
+    <button class="tab-btn" data-tab="calendar">② Calendario de semanas</button>
+    <button class="tab-btn" data-tab="tools">③ Herramientas ISO</button>
   </div>
 
   <!-- ══ TAB 1 ══ -->
@@ -502,6 +710,75 @@
     </div>
 
   </div>
+
+  <!-- ══ TAB 3 — ISO TOOLS ══ -->
+  <div class="tab-panel" id="panel-tools">
+
+    <div class="tools-grid">
+
+      <!-- 1. Week picker visual -->
+      <div class="tool-card">
+        <div class="tool-card-title">① Week Picker Visual</div>
+        <div class="wp-controls">
+          <button class="wp-nav" id="wpPrev">‹</button>
+          <span class="wp-month-label" id="wpMonthLabel">—</span>
+          <button class="wp-nav" id="wpNext">›</button>
+        </div>
+        <div class="week-picker-cal" id="wpCal"></div>
+        <div class="wp-result" id="wpResult"></div>
+      </div>
+
+      <!-- 2. Boundary weeks -->
+      <div class="tool-card">
+        <div class="tool-card-title">② Boundary Weeks Analyzer</div>
+        <input type="number" id="boundYear" value="2026" min="2020" max="2030" 
+          style="background:#1a1c22;border:1px solid var(--border);color:var(--text);padding:.5rem;font-size:.75rem;width:100%;margin-bottom:.5rem;">
+        <div class="boundary-list" id="boundaryList"></div>
+      </div>
+
+      <!-- 3. Week range shortcuts -->
+      <div class="tool-card">
+        <div class="tool-card-title">③ Week Range Shortcuts</div>
+        <div class="shortcut-btns">
+          <button class="btn-shortcut" data-range="thisMonth">Este mes ISO</button>
+          <button class="btn-shortcut" data-range="q1">Q1 completo</button>
+          <button class="btn-shortcut" data-range="q2">Q2 completo</button>
+          <button class="btn-shortcut" data-range="q3">Q3 completo</button>
+          <button class="btn-shortcut" data-range="last4">Últimas 4 sem.</button>
+          <button class="btn-shortcut" data-range="next12">Próximas 12 sem.</button>
+        </div>
+        <div style="font-size:.62rem;color:var(--muted);margin-top:.6rem;">
+          Auto-rellena el selector de rango del Tab ①
+        </div>
+      </div>
+
+      <!-- 4. ISO week calculator inverso -->
+      <div class="tool-card">
+        <div class="tool-card-title">④ ISO Week → Dates</div>
+        <div class="inverse-input">
+          <input type="text" id="inverseInput" placeholder="2026-W18" />
+          <button class="btn-analyze" style="padding:.5rem 1rem;font-size:.7rem;" id="inverseGo">→</button>
+        </div>
+        <div class="inverse-result" id="inverseResult"></div>
+      </div>
+
+      <!-- 5. Validator -->
+      <div class="tool-card">
+        <div class="tool-card-title">⑤ Validador de Semanas</div>
+        <textarea class="validator-textarea" id="validatorInput" placeholder="2026-W01&#10;2026-W02&#10;2026-W03&#10;..."></textarea>
+        <button class="btn-analyze" style="width:100%;font-size:.7rem;" id="validatorGo">Validar</button>
+        <div class="validator-result" id="validatorResult"></div>
+      </div>
+
+      <!-- 6. Year week count -->
+      <div class="tool-card">
+        <div class="tool-card-title">⑥ Year Week Count</div>
+        <table class="ywc-table" id="ywcTable"></table>
+      </div>
+
+    </div><!-- /tools-grid -->
+
+  </div><!-- /panel-tools -->
 
   <footer>DATE INSPECTOR · DAYJS · ISO 8601 · CUSTOM 3-QUARTER SYSTEM</footer>
 </div>
@@ -713,6 +990,374 @@
   const today = dayjs();
   document.getElementById('rangeFrom').value = today.format('YYYY-MM-DD');
   document.getElementById('rangeTo').value   = today.add(8, 'week').format('YYYY-MM-DD');
+
+  /* ═══════════════════════════════════════════
+     TAB 3 — ISO TOOLS
+  ═══════════════════════════════════════════ */
+
+  // ─── Tool 1: Week Picker Visual ───
+  let wpCurrentMonth = dayjs();
+
+  function renderWeekPicker() {
+    const cal   = document.getElementById('wpCal');
+    const label = document.getElementById('wpMonthLabel');
+    const first = wpCurrentMonth.startOf('month');
+
+    label.textContent = `${MONTH_NAMES[wpCurrentMonth.month()+1]} ${wpCurrentMonth.year()}`;
+
+    // Build calendar grid: start from Monday of the week containing first day of month
+    let cursor = first.isoWeekday(1);
+    if (cursor.isAfter(first)) cursor = cursor.subtract(7, 'day');
+
+    // Header row
+    cal.innerHTML = ['L','M','X','J','V','S','D'].map(d => 
+      `<div class="wp-header">${d}</div>`
+    ).join('');
+
+    // Day cells (6 weeks)
+    for (let i = 0; i < 42; i++) {
+      const day = document.createElement('div');
+      day.className = 'wp-day';
+      if (cursor.month() !== wpCurrentMonth.month()) day.classList.add('wp-other-month');
+      day.textContent = cursor.date();
+      
+      const dateStr = cursor.format('YYYY-MM-DD');
+      day.dataset.date = dateStr;
+      
+      // Capture current cursor value in closure
+      const clickDate = cursor.clone();
+      day.addEventListener('click', () => selectWeek(clickDate));
+      
+      cal.appendChild(day);
+      cursor = cursor.add(1, 'day');
+    }
+  }
+
+  function selectWeek(d) {
+    const monday = d.isoWeekday(1);
+    const sunday = monday.add(6, 'day');
+    
+    document.querySelectorAll('.wp-day').forEach(cell => {
+      cell.classList.remove('wp-selected');
+      const cellDate = dayjs(cell.dataset.date);
+      const cellMonday = cellDate.isoWeekday(1);
+      
+      if (cellMonday.format('YYYY-MM-DD') === monday.format('YYYY-MM-DD')) {
+        cell.classList.add('wp-selected');
+      }
+    });
+
+    const wNum = d.isoWeek();
+    const wYear = d.isoWeekYear();
+
+    const res = document.getElementById('wpResult');
+    res.innerHTML = `
+      <strong>${wYear}-W${String(wNum).padStart(2,'0')}</strong><br>
+      ${monday.format('DD')} ${MONTH_SHORT[monday.month()+1]} – ${sunday.format('DD')} ${MONTH_SHORT[sunday.month()+1]} ${sunday.year()}
+    `;
+    res.classList.add('show');
+  }
+
+  document.getElementById('wpPrev').addEventListener('click', () => {
+    wpCurrentMonth = wpCurrentMonth.subtract(1, 'month');
+    renderWeekPicker();
+  });
+  document.getElementById('wpNext').addEventListener('click', () => {
+    wpCurrentMonth = wpCurrentMonth.add(1, 'month');
+    renderWeekPicker();
+  });
+
+  renderWeekPicker();
+
+  // ─── Tool 2: Boundary Weeks Analyzer ───
+  function analyzeBoundaryWeeks(year) {
+    const list = document.getElementById('boundaryList');
+    list.innerHTML = '';
+
+    let cursor = dayjs(`${year}-01-04`).isoWeekday(1);
+    const boundaries = [];
+
+    for (let i = 0; i < 54; i++) {
+      const wYear = cursor.isoWeekYear();
+      if (wYear !== year) { 
+        cursor = cursor.add(7, 'day'); 
+        continue; 
+      }
+
+      const monday = cursor;
+      const sunday = cursor.add(6, 'day');
+      const wNum = cursor.isoWeek();
+
+      // Check if week crosses month or year boundary
+      const crossMonth = monday.month() !== sunday.month();
+      const crossYear  = monday.year() !== sunday.year();
+
+      if (crossMonth || crossYear) {
+        boundaries.push({ wNum, wYear, monday, sunday, crossMonth, crossYear });
+      }
+
+      cursor = cursor.add(7, 'day');
+    }
+
+    if (boundaries.length === 0) {
+      list.innerHTML = '<div style="padding:.8rem;color:var(--muted);font-size:.7rem;">No hay semanas frontera este año.</div>';
+      return;
+    }
+
+    boundaries.forEach(b => {
+      const item = document.createElement('div');
+      item.className = 'boundary-item';
+      const reason = b.crossYear ? 'Cruza año calendario' : 'Cruza mes';
+      item.innerHTML = `
+        <div class="bi-week">${b.wYear}-W${String(b.wNum).padStart(2,'0')}</div>
+        <div class="bi-detail">
+          ${b.monday.format('DD')} ${MONTH_SHORT[b.monday.month()+1]} – 
+          ${b.sunday.format('DD')} ${MONTH_SHORT[b.sunday.month()+1]} ${b.sunday.year()} · ${reason}
+        </div>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  document.getElementById('boundYear').addEventListener('input', e => {
+    const year = parseInt(e.target.value);
+    if (year >= 2020 && year <= 2030) {
+      analyzeBoundaryWeeks(year);
+    }
+  });
+  analyzeBoundaryWeeks(2026);
+
+  // ─── Tool 3: Week Range Shortcuts ───
+  document.querySelectorAll('.btn-shortcut').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const range = btn.dataset.range;
+      const now = dayjs();
+      let from, to;
+
+      if (range === 'thisMonth') {
+        // Get current ISO month (based on thursday)
+        const thu = now.isoWeekday(4);
+        const refMonth = thu.month();
+        const refYear = thu.year();
+        
+        // First and last day of that month
+        const firstDay = dayjs(new Date(refYear, refMonth, 1));
+        const lastDay  = dayjs(new Date(refYear, refMonth + 1, 0));
+        
+        from = firstDay;
+        to   = lastDay;
+      } else if (range === 'q1') {
+        from = dayjs(`${now.year()}-01-01`);
+        to   = dayjs(`${now.year()}-04-30`);
+      } else if (range === 'q2') {
+        from = dayjs(`${now.year()}-05-01`);
+        to   = dayjs(`${now.year()}-08-31`);
+      } else if (range === 'q3') {
+        from = dayjs(`${now.year()}-09-01`);
+        to   = dayjs(`${now.year()}-12-31`);
+      } else if (range === 'last4') {
+        to   = now;
+        from = now.subtract(3, 'week');
+      } else if (range === 'next12') {
+        from = now;
+        to   = now.add(11, 'week');
+      }
+
+      document.getElementById('rangeFrom').value = from.format('YYYY-MM-DD');
+      document.getElementById('rangeTo').value   = to.format('YYYY-MM-DD');
+
+      // Switch to tab 1
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector('[data-tab="inspector"]').classList.add('active');
+      document.getElementById('panel-inspector').classList.add('active');
+      
+      // Scroll to range section
+      setTimeout(() => {
+        document.querySelector('.range-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    });
+  });
+
+  // ─── Tool 4: ISO Week → Dates (Inverse) ───
+  document.getElementById('inverseGo').addEventListener('click', () => {
+    const input = document.getElementById('inverseInput').value.trim();
+    const res   = document.getElementById('inverseResult');
+
+    const match = input.match(/^(\d{4})-?W(\d{1,2})$/i);
+    if (!match) {
+      res.innerHTML = '<div style="color:#ff7b7b;">Formato inválido. Usa: 2026-W18 o 2026W18</div>';
+      res.classList.add('show');
+      return;
+    }
+
+    const year = parseInt(match[1]);
+    const week = parseInt(match[2]);
+
+    if (week < 1 || week > 53) {
+      res.innerHTML = '<div style="color:#ff7b7b;">Semana debe estar entre 1 y 53.</div>';
+      res.classList.add('show');
+      return;
+    }
+
+    // Find Monday of ISO W01 for this year
+    const jan4 = dayjs(`${year}-01-04`);
+    const w1monday = jan4.isoWeekday(1);
+    const targetMonday = w1monday.add(week - 1, 'week');
+
+    // Validate that this week belongs to the requested year
+    if (targetMonday.isoWeekYear() !== year) {
+      res.innerHTML = `<div style="color:#ff7b7b;">La semana ${week} no pertenece al año ISO ${year}.</div>`;
+      res.classList.add('show');
+      return;
+    }
+
+    const sunday = targetMonday.add(6, 'day');
+    const thu = targetMonday.isoWeekday(4);
+    const qInfo = getQ(thu);
+    
+    res.innerHTML = `
+      <div class="ir-label">Lunes – Domingo</div>
+      <div class="ir-value">
+        ${targetMonday.format('DD')} ${MONTH_SHORT[targetMonday.month()+1]} ${targetMonday.year()} – 
+        ${sunday.format('DD')} ${MONTH_SHORT[sunday.month()+1]} ${sunday.year()}
+      </div>
+      <div class="ir-label" style="margin-top:.4rem;">Mes ISO (jueves)</div>
+      <div class="ir-value">${thu.year()}-${String(thu.month()+1).padStart(2,'0')} · ${qInfo.label}</div>
+    `;
+    res.classList.add('show');
+  });
+  
+  document.getElementById('inverseInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('inverseGo').click();
+  });
+
+  // ─── Tool 5: Validator ───
+  document.getElementById('validatorGo').addEventListener('click', () => {
+    const input = document.getElementById('validatorInput').value;
+    const res   = document.getElementById('validatorResult');
+
+    const lines = input.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length === 0) {
+      res.innerHTML = '<div style="color:var(--muted);padding:.5rem;">Introduce semanas ISO para validar (una por línea).</div>';
+      res.classList.add('show');
+      return;
+    }
+
+    const valid = [], invalid = [], warnings = [];
+    const seen = new Set();
+
+    lines.forEach((line, idx) => {
+      const match = line.match(/^(\d{4})-?W(\d{1,2})$/i);
+      if (!match) {
+        invalid.push(`Línea ${idx+1}: "${line}" — formato inválido`);
+        return;
+      }
+
+      const year = parseInt(match[1]);
+      const week = parseInt(match[2]);
+
+      if (week < 1 || week > 53) {
+        invalid.push(`Línea ${idx+1}: ${line} — semana fuera de rango`);
+        return;
+      }
+
+      // Check if week exists
+      const jan4 = dayjs(`${year}-01-04`);
+      const w1monday = jan4.isoWeekday(1);
+      const targetMonday = w1monday.add(week - 1, 'week');
+      
+      if (targetMonday.isoWeekYear() !== year) {
+        invalid.push(`Línea ${idx+1}: ${line} — no existe en año ISO ${year}`);
+        return;
+      }
+
+      const normalized = `${year}-W${String(week).padStart(2,'0')}`;
+      if (seen.has(normalized)) {
+        warnings.push(`${normalized} — duplicado`);
+      }
+      seen.add(normalized);
+      valid.push(normalized);
+    });
+
+    // Check for gaps (only if 2+ valid weeks)
+    if (valid.length >= 2) {
+      const sorted = valid.map(v => {
+        const m = v.match(/^(\d{4})-W(\d{1,2})$/);
+        return { str: v, year: parseInt(m[1]), week: parseInt(m[2]) };
+      }).sort((a,b) => {
+        if (a.year !== b.year) return a.year - b.year;
+        return a.week - b.week;
+      });
+
+      for (let i = 1; i < sorted.length; i++) {
+        const prev = sorted[i-1];
+        const curr = sorted[i];
+        
+        if (curr.year === prev.year) {
+          if (curr.week > prev.week + 1) {
+            const gap = curr.week - prev.week - 1;
+            warnings.push(`Gap de ${gap} semana(s) entre ${prev.str} y ${curr.str}`);
+          }
+        }
+      }
+    }
+
+    res.innerHTML = '';
+    
+    if (valid.length > 0) {
+      res.innerHTML += `
+        <div class="vr-section vr-valid">
+          <div class="vr-title">✓ Válidas (${valid.length})</div>
+          <ul class="vr-list">${valid.slice(0,8).map(v => `<li>${v}</li>`).join('')}</ul>
+          ${valid.length > 8 ? `<div style="color:var(--muted);font-size:.6rem;margin-top:.3rem;">...y ${valid.length-8} más</div>` : ''}
+        </div>
+      `;
+    }
+    
+    if (invalid.length > 0) {
+      res.innerHTML += `
+        <div class="vr-section vr-invalid">
+          <div class="vr-title">✗ Inválidas (${invalid.length})</div>
+          <ul class="vr-list">${invalid.map(v => `<li>${v}</li>`).join('')}</ul>
+        </div>
+      `;
+    }
+    
+    if (warnings.length > 0) {
+      res.innerHTML += `
+        <div class="vr-section vr-info">
+          <div class="vr-title">⚠ Advertencias (${warnings.length})</div>
+          <ul class="vr-list">${warnings.map(v => `<li>${v}</li>`).join('')}</ul>
+        </div>
+      `;
+    }
+    
+    res.classList.add('show');
+  });
+
+  // ─── Tool 6: Year Week Count ───
+  function buildYearWeekCountTable() {
+    const table = document.getElementById('ywcTable');
+    let html = '<thead><tr><th>Año</th><th>Semanas ISO</th></tr></thead><tbody>';
+
+    for (let year = 2020; year <= 2030; year++) {
+      let cursor = dayjs(`${year}-01-04`).isoWeekday(1);
+      let count = 0;
+      
+      for (let i = 0; i < 54; i++) {
+        if (cursor.isoWeekYear() === year) count++;
+        cursor = cursor.add(7, 'day');
+      }
+      
+      const cls = count === 53 ? ' class="ywc-53"' : '';
+      html += `<tr><td>${year}</td><td${cls}>${count}</td></tr>`;
+    }
+
+    html += '</tbody>';
+    table.innerHTML = html;
+  }
+  buildYearWeekCountTable();
 
   /* ───── Tab 2 — Calendar ───── */
   function fmt(d) { return `${String(d.date()).padStart(2,'0')} ${MONTH_SHORT[d.month()+1]}`; }
